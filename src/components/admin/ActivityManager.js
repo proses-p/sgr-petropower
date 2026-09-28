@@ -1,0 +1,12 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Activity, Clock3 } from "lucide-react";
+
+const formatter = new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" });
+
+export default function ActivityManager() {
+    const [items, setItems] = useState([]); const [loading, setLoading] = useState(true); const [error, setError] = useState("");
+    useEffect(() => { fetch("/api/admin/activity").then(async (response) => { const result = await response.json(); if (response.ok) setItems(result.data || []); else setError(result.error || "Unable to load activity"); setLoading(false); }).catch(() => { setError("Unable to load activity"); setLoading(false); }); }, []);
+    return <div><div><p className="text-sm font-bold uppercase tracking-[0.22em] text-orange-500">Governance</p><h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Activity log</h1><p className="mt-2 text-slate-500">A clear record of important changes made in the workspace.</p></div><section className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm">{error && <p className="m-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}{loading ? <div className="space-y-3 p-5"><div className="h-14 animate-pulse rounded-xl bg-slate-100" /><div className="h-14 animate-pulse rounded-xl bg-slate-100" /></div> : items.length ? <div className="divide-y divide-slate-100">{items.map((item) => <div key={item.id} className="flex gap-4 p-5"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-50 text-orange-600"><Activity size={18} /></div><div className="min-w-0"><p className="font-semibold text-slate-800">{item.action}</p><p className="mt-1 text-sm text-slate-500">{item.details || item.entity}{item.entityId ? ` · #${item.entityId}` : ""}</p><p className="mt-2 flex items-center gap-1 text-xs text-slate-400"><Clock3 size={13} />{formatter.format(new Date(item.createdAt))} · {item.user.name}</p></div></div>)}</div> : <div className="px-5 py-16 text-center"><Activity className="mx-auto text-slate-300" size={30} /><p className="mt-4 font-semibold text-slate-800">No activity yet</p><p className="mt-2 text-sm text-slate-500">Important admin changes will appear here.</p></div>}</section></div>;
+}

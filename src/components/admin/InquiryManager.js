@@ -1,0 +1,39 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { CheckCircle2, Eye, Mail, Search, Trash2, X } from "lucide-react";
+
+const formatter = new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" });
+
+export default function InquiryManager() {
+    const [items, setItems] = useState([]);
+    const [selected, setSelected] = useState(null);
+    const [query, setQuery] = useState("");
+    const [status, setStatus] = useState("all");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    async function load() {
+        setLoading(true);
+        const response = await fetch("/api/inquiries");
+        const result = await response.json();
+        if (response.ok) setItems(result.data || []); else setError(result.error || "Unable to load inquiries");
+        setLoading(false);
+    }
+    useEffect(() => { load(); }, []);
+
+    async function updateInquiry(id, nextStatus) {
+        const response = await fetch(`/api/inquiries/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: nextStatus }) });
+        if (response.ok) { await load(); if (selected?.id === id) setSelected({ ...selected, status: nextStatus }); } else setError("Unable to update inquiry");
+    }
+    async function remove(id) {
+        if (!window.confirm("Delete this inquiry? This cannot be undone.")) return;
+        const response = await fetch(`/api/inquiries/${id}`, { method: "DELETE" });
+        if (response.ok) { setSelected(null); load(); } else setError("Unable to delete inquiry");
+    }
+
+    const filtered = items.filter((item) => (status === "all" || item.status === status) && `${item.fullName} ${item.email} ${item.company || ""} ${item.requestedService || ""}`.toLowerCase().includes(query.toLowerCase()));
+    return <div><div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="text-sm font-bold uppercase tracking-[0.22em] text-orange-500">Client relationships</p><h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Inquiries</h1><p className="mt-2 text-slate-500">Every conversation is an opportunity to deliver well.</p></div><span className="text-sm text-slate-400">{items.filter((item) => item.status === "unread").length} unread</span></div><div className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:p-5"><div className="relative flex-1"><Search className="absolute left-3 top-3 text-slate-400" size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search inquiries..." className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-orange-500" /></div><select value={status} onChange={(event) => setStatus(event.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-orange-500"><option value="all">All statuses</option><option value="unread">Unread</option><option value="read">Read</option><option value="responded">Responded</option></select></div>{error && <p className="mx-5 mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}{loading ? <div className="space-y-3 p-5"><div className="h-16 animate-pulse rounded-xl bg-slate-100" /><div className="h-16 animate-pulse rounded-xl bg-slate-100" /></div> : filtered.length ? <div className="divide-y divide-slate-100">{filtered.map((item) => <div key={item.id} className={`flex flex-col gap-4 p-5 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between ${item.status === "unread" ? "border-l-4 border-orange-500 bg-orange-50/30" : ""}`}><div className="min-w-0"><div className="flex items-center gap-2"><p className="truncate font-semibold text-slate-900">{item.fullName}</p>{item.status === "unread" && <span className="h-2 w-2 rounded-full bg-orange-500" />}</div><p className="mt-1 truncate text-sm text-slate-500">{item.email} {item.company ? `· ${item.company}` : ""}</p><p className="mt-1 text-xs text-slate-400">{formatter.format(new Date(item.createdAt))}</p></div><div className="flex shrink-0 items-center gap-2"><span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ${item.status === "unread" ? "bg-orange-100 text-orange-700" : item.status === "responded" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>{item.status}</span><button onClick={() => { setSelected(item); if (item.status === "unread") updateInquiry(item.id, "read"); }} className="rounded-lg p-2 text-slate-500 hover:bg-white hover:text-orange-600" aria-label="View inquiry"><Eye size={17} /></button><button onClick={() => remove(item.id)} className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-600" aria-label="Delete inquiry"><Trash2 size={17} /></button></div></div>)}</div> : <div className="px-5 py-16 text-center"><Mail className="mx-auto text-slate-300" size={30} /><p className="mt-4 font-semibold text-slate-800">{query || status !== "all" ? "No matching inquiries" : "Your inbox is clear"}</p><p className="mt-2 text-sm text-slate-500">{query || status !== "all" ? "Try adjusting your search or filter." : "New project inquiries will appear here."}</p></div>}</div>{selected && <InquiryDetail inquiry={selected} close={() => setSelected(null)} updateInquiry={updateInquiry} remove={remove} />}</div>;
+}
+
+function InquiryDetail({ inquiry, close, updateInquiry, remove }) { return <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-0 sm:items-center sm:p-6"><aside className="max-h-[94vh] w-full max-w-xl overflow-y-auto rounded-t-2xl bg-white p-6 shadow-2xl sm:rounded-2xl sm:p-8"><div className="flex items-start justify-between"><div><p className="text-sm font-bold uppercase tracking-[0.2em] text-orange-500">Inquiry details</p><h2 className="mt-2 text-2xl font-semibold text-slate-900">{inquiry.fullName}</h2></div><button onClick={close} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100" aria-label="Close details"><X size={20} /></button></div><div className="mt-7 grid gap-4 border-y border-slate-100 py-5 text-sm sm:grid-cols-2"><div><p className="text-slate-400">Email</p><a href={`mailto:${inquiry.email}`} className="mt-1 block font-medium text-slate-800 hover:text-orange-600">{inquiry.email}</a></div><div><p className="text-slate-400">Phone</p><p className="mt-1 font-medium text-slate-800">{inquiry.phone || "Not provided"}</p></div><div><p className="text-slate-400">Company</p><p className="mt-1 font-medium text-slate-800">{inquiry.company || "Not provided"}</p></div><div><p className="text-slate-400">Requested service</p><p className="mt-1 font-medium text-slate-800">{inquiry.requestedService || "Not specified"}</p></div></div><div className="py-6"><p className="text-sm font-medium text-slate-400">Message</p><p className="mt-3 whitespace-pre-wrap leading-7 text-slate-700">{inquiry.message}</p></div><div className="flex flex-wrap gap-3 border-t border-slate-100 pt-5"><button onClick={() => updateInquiry(inquiry.id, "read")} className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-orange-500 hover:text-orange-600"><CheckCircle2 size={17} />Mark read</button><button onClick={() => updateInquiry(inquiry.id, "responded")} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700"><Mail size={17} />Mark responded</button><button onClick={() => remove(inquiry.id)} className="ml-auto rounded-xl p-3 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label="Delete inquiry"><Trash2 size={18} /></button></div></aside></div>; }

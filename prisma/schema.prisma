@@ -1,0 +1,215 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  SUPERADMIN
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique
+  passwordHash String
+  role         UserRole       @default(ADMIN)
+  isActive     Boolean        @default(true)
+  sessions     AdminSession[]
+  activities   ActivityLog[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model AdminSession {
+  id        Int      @id @default(autoincrement())
+  tokenHash String   @unique
+  expiresAt DateTime
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Inquiry {
+  id              Int      @id @default(autoincrement())
+  fullName        String
+  email           String
+  phone           String?
+  company         String?
+  requestedService String?
+  message         String
+  status          String   @default("unread")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CompanyProfile {
+  id          Int      @id @default(1)
+  companyName String
+  about       String
+  mission     String?
+  vision      String?
+  phone       String?
+  email       String?
+  address     String?
+  website     String?
+  linkedin    String?
+  instagram   String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Media {
+  id        Int          @id @default(autoincrement())
+  url       String
+  alt       String?
+  title     String?
+  location  String       @default("homepage")
+  sortOrder Int          @default(0)
+  serviceId Int?
+  service   Service?     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  projectId Int?
+  project   Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Service {
+  id          Int            @id @default(autoincrement())
+  title       String
+  slug        String         @unique
+  description String
+  createAt    DateTime       @default(now())
+  updateAt    DateTime       @updatedAt
+  images      ServiceImage[]
+  media       Media[]
+}
+
+model ServiceImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  alt       String?
+  sortOrder Int      @default(0)
+  serviceId Int
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id             Int            @id @default(autoincrement())
+  title          String
+  slug           String         @unique
+  description    String
+  location       String?
+  client         String?
+  completionDate DateTime?
+  completionYear Int?
+  status         String         @default("COMPLETED")
+  images         ProjectImage[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  media          Media[]
+}
+
+model ProjectImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  alt       String?
+  sortOrder Int      @default(0)
+  projectId Int
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String 
+  logoUrl   String 
+  website   String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CompanyStat {
+  id        Int      @id @default(autoincrement())
+  label     String
+  value     String
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CompanyValue {
+  id        Int      @id @default(autoincrement())
+  title     String 
+  description String
+  sortOrder   Int    @default(0)
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Certification {
+  id         Int      @id @default(autoincrement())
+  title      String
+  issuingOrganisation  String?
+  year        String?
+  description String?
+  documentUrl  String?
+  type         String @default("CERTIFICATION")
+  sortOrder   Int     @default(0)
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Leadership {
+  id          Int       @id @default(autoincrement())
+  name        String    
+  position    String
+  photoUrl    String?
+  biography   String?
+  profileUrl  String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model CorporateDocument {
+  id          Int       @id @default(autoincrement())
+  title       String
+  type        String
+  description String
+  documentUrl String
+  sortOrder   Int       @default(0)
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime  @updatedAt
+}

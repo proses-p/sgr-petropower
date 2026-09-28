@@ -1,0 +1,427 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+    --font-sans: var(--font-manrope);
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+    font-family: var(--font-manrope), sans-serif;
+}
+
+.service-card-reveal {
+        animation: serviceCardReveal 0.55s cubic-bezier(.2, .7, .25, 1) both;
+        animation-delay: calc(var(--card-index, 0) * 70ms);
+}
+
+@keyframes serviceCardReveal {
+        from {
+                opacity: 0;
+                transform: translateY(14px);
+        }
+
+        to {
+                opacity: 1;
+                transform: translateY(0);
+        }
+}
+
+
+/* ================================
+   SGR SERVICE DETAIL ANIMATIONS
+================================ */
+
+.service-hero-image {
+    transform: scale(1.08);
+    animation: serviceHeroZoom 12s ease-out forwards;
+}
+
+.service-reveal {
+    animation: serviceRevealUp 0.9s 0.15s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.service-line {
+    animation: serviceLineGrow 1s 0.45s cubic-bezier(.16, 1, .3, 1) both;
+    transform-origin: left;
+}
+
+.service-title {
+    animation: serviceTitleReveal 1.2s 0.25s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.service-number {
+    animation: serviceNumberReveal 1.5s 0.4s ease-out both;
+}
+
+.service-bottom {
+    animation: serviceRevealUp 1s 0.8s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.service-glow {
+    animation: serviceGlowMove 8s ease-in-out infinite alternate;
+}
+
+@keyframes serviceHeroZoom {
+    from {
+        transform: scale(1.08);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes serviceRevealUp {
+    from {
+        opacity: 0;
+        transform: translateY(35px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes serviceTitleReveal {
+    from {
+        opacity: 0;
+        transform: translateY(70px);
+        clip-path: inset(100% 0 0 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes serviceLineGrow {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes serviceNumberReveal {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(1.1);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes serviceGlowMove {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: translate3d(-80px, 50px, 0);
+    }
+}
+
+/* Gallery */
+
+.gallery-item {
+    animation: galleryReveal 0.8s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.lightbox {
+    animation: lightboxIn 0.35s ease-out both;
+}
+
+.lightbox-image {
+    animation: lightboxImageIn 0.5s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+@keyframes galleryReveal {
+    from {
+        opacity: 0;
+        transform: translateY(35px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes lightboxIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes lightboxImageIn {
+    from {
+        opacity: 0;
+        transform: scale(.92);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .service-hero-image,
+    .service-reveal,
+    .service-line,
+    .service-title,
+    .service-number,
+    .service-bottom,
+    .service-glow,
+    .service-card-reveal,
+    .gallery-item,
+    .lightbox,
+    .lightbox-image {
+        animation: none !important;
+    }
+}
+
+
+.client-track {
+    animation: client-scroll 35s linear infinite;
+}
+
+.client-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes client-scroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+
+@import "tailwindcss";
+
+/* =========================================================
+   CLIENT LOGOS — INFINITE FLOATING MARQUEE
+   ========================================================= */
+
+.client-marquee {
+    width: 100%;
+    overflow: hidden;
+}
+
+.client-marquee-track {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    gap: 24px;
+    animation: client-marquee-scroll 50s linear infinite;
+    will-change: transform;
+}
+
+.client-marquee:hover .client-marquee-track {
+    animation-play-state: paused;
+}
+
+.client-floating-logo {
+    animation: client-logo-float 5s ease-in-out infinite;
+    will-change: transform;
+}
+
+.client-floating-logo:nth-child(2n) {
+    animation-duration: 6s;
+    animation-delay: -2s;
+}
+
+.client-floating-logo:nth-child(3n) {
+    animation-duration: 7s;
+    animation-delay: -4s;
+}
+
+.client-floating-logo:nth-child(4n) {
+    animation-duration: 5.5s;
+    animation-delay: -1s;
+}
+
+.client-floating-logo:hover {
+    animation-play-state: paused;
+}
+
+@keyframes client-marquee-scroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(calc(-50% - 12px));
+    }
+}
+
+@keyframes client-logo-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .client-marquee-track,
+    .client-floating-logo {
+        animation: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .client-marquee-track {
+        gap: 16px;
+        animation-duration: 42s;
+    }
+}
+
+.partner-logo-float {
+    animation: partner-logo-float 5.5s ease-in-out infinite;
+    will-change: transform;
+}
+
+li:nth-child(2n) .partner-logo-float {
+    animation-duration: 6.5s;
+    animation-delay: -2s;
+}
+
+li:nth-child(3n) .partner-logo-float {
+    animation-duration: 7s;
+    animation-delay: -4s;
+}
+
+@keyframes partner-logo-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .partner-logo-float {
+        animation: none;
+    }
+}
+
+
+/* Individual logo floating motion */
+
+.client-floating-logo {
+    animation: client-logo-float 5s ease-in-out infinite;
+
+    will-change: transform;
+}
+
+
+/* Different floating speeds */
+
+.client-floating-logo:nth-child(2n) {
+    animation-duration: 6s;
+    animation-delay: -2s;
+}
+
+.client-floating-logo:nth-child(3n) {
+    animation-duration: 7s;
+    animation-delay: -4s;
+}
+
+.client-floating-logo:nth-child(4n) {
+    animation-duration: 5.5s;
+    animation-delay: -1s;
+}
+
+
+/* Pause individual floating animation on hover */
+
+.client-floating-logo:hover {
+    animation-play-state: paused;
+}
+
+
+/* =========================================================
+   INFINITE HORIZONTAL MOVEMENT
+   ========================================================= */
+
+@keyframes client-marquee-scroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(calc(-50% - 12px));
+    }
+}
+
+
+/* =========================================================
+   FLOATING UP / DOWN
+   ========================================================= */
+
+@keyframes client-logo-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .client-marquee-track,
+    .client-floating-logo {
+        animation: none;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+    .client-marquee-track {
+        gap: 16px;
+        animation-duration: 42s;
+    }
+}

@@ -1,0 +1,14 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/sgrpetro/sgr-petropower/
+    - /bin/cp -R src $DEPLOYPATH
+    - /bin/cp -R public $DEPLOYPATH
+    - /bin/cp -R prisma $DEPLOYPATH
+    - /bin/cp package.json $DEPLOYPATH
+    - /bin/cp package-lock.json $DEPLOYPATH
+    - /bin/cp next.config.mjs $DEPLOYPATH
+    - /bin/cp server.js $DEPLOYPATH
+    - cd $DEPLOYPATH && npm install
+    - cd $DEPLOYPATH && npx prisma generate
+    - cd $DEPLOYPATH && npm run build

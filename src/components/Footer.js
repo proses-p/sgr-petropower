@@ -18,7 +18,7 @@ const officialAddress = "Plot 13A, Potwe Street, Nyerere Road, P.O. Box 12927, D
 function ContactItem({ icon: Icon, label, href, children }) {
 	return (
 		<div className="flex items-start gap-3">
-			<Icon size={16} strokeWidth={1.7} className="mt-0.5 shrink-0 text-orange-400" aria-hidden="true" />
+			<Icon size={16} strokeWidth={1.7} className="mt-0.5 shrink-0 text-[#ed1c24]" aria-hidden="true" />
 			<div className="min-w-0">
 				<p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
 				{href ? (
@@ -37,7 +37,7 @@ export default async function Footer({ showClientLogos = true }) {
 	const [profile, services] = await Promise.all([
 		prisma.companyProfile.findUnique({
 			where: { id: 1 },
-			select: { about: true, phone: true, email: true, address: true },
+			select: { about: true, phones: true, email: true, address: true },
 		}),
 		prisma.service.findMany({
 			orderBy: { id: "asc" },
@@ -50,7 +50,7 @@ export default async function Footer({ showClientLogos = true }) {
 			? `${profile.about.trim().slice(0, 147).trimEnd()}...`
 			: profile.about.trim()
 		: "Engineering, construction, power and petroleum solutions built around quality, safety and lasting performance.";
-	const phoneNumbers = profile?.phone?.trim() ? [profile.phone.trim()] : officialPhoneNumbers;
+	const phoneNumbers = (profile?.phones && profile.phones.length > 0) ? profile.phones : officialPhoneNumbers;
 	const email = profile?.email?.trim() || officialEmail;
 	const address = profile?.address?.trim() || officialAddress;
 
@@ -60,7 +60,7 @@ export default async function Footer({ showClientLogos = true }) {
 				<section className="border-b border-white/10 py-8 sm:py-9" aria-labelledby="footer-cta-title">
 					<div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
 						<div className="max-w-2xl">
-							<p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-orange-400">Let&apos;s build together</p>
+							<p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#ed1c24]">Let&apos;s build together</p>
 							<h2 id="footer-cta-title" className="mt-2 text-2xl font-semibold leading-tight tracking-normal text-white sm:text-[1.75rem]">
 								Have an engineering project in mind?
 							</h2>
@@ -70,7 +70,7 @@ export default async function Footer({ showClientLogos = true }) {
 						</div>
 						<Link
 							href="/contact"
-							className="group inline-flex min-h-11 shrink-0 items-center justify-center gap-3 self-start bg-orange-500 px-5 text-sm font-semibold text-white transition-colors hover:bg-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 sm:self-center motion-reduce:transition-none"
+							className="group inline-flex min-h-11 shrink-0 items-center justify-center gap-3 self-start bg-[#ed1c24] px-5 text-sm font-semibold text-white transition-colors hover:bg-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 sm:self-center motion-reduce:transition-none"
 						>
 							Talk to Our Team
 							<ArrowRight size={16} className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
@@ -80,13 +80,13 @@ export default async function Footer({ showClientLogos = true }) {
 
 				<section className="grid gap-9 border-b border-white/10 py-9 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-8 lg:grid-cols-[1.25fr_0.7fr_1.15fr_1.25fr] lg:gap-8 lg:py-10">
 					<div>
-						<Link href="/" aria-label="SGR Petropower Engineering home" className="inline-flex">
+						{/* <Link href="/" aria-label="SGR Petropower Engineering home" className="inline-flex">
 							<img
 								src="https://www.sgrpetropower.co.tz/images/pet.png"
 								alt="SGR Petropower Engineering Ltd"
 								className="h-auto w-[148px] object-contain sm:w-[164px]"
 							/>
-						</Link>
+						</Link> */}
 						<p className="mt-4 max-w-xs text-sm leading-6 text-slate-400">{companyDescription}</p>
 						<div className="mt-4 flex flex-wrap items-center gap-2">
 							<a

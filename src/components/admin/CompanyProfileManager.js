@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { Award, Building2, FileText, Flag, Goal, Save, Users, ChartNoAxesColumnIncreasing } from "lucide-react";
 import AboutCollectionManager from "@/components/admin/AboutCollectionManager";
+// import { type } from '../../../.next/types/routes.d';
 
 const initial = {
     companyName: "",
     about: "",
     mission: "",
     vision: "",
-    phone: "",
+    phones: [""],
     email: "",
     address: "",
     website: "",
@@ -58,6 +59,27 @@ export default function CompanyProfileManager() {
     function change(event) {
         setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
     }
+
+    const handlePhoneChange = (index, value) => {
+        setForm((prev) => ({
+            ...prev,
+            phones: prev.phones.map((phone,i) => i === index ? value : phone),
+        }));
+    };
+
+    const addPhone = () => {
+        setForm((prev) => ({
+            ...prev,
+            phones: [...prev.phones, ""],
+        }));
+    };
+
+    const removePhone = (index) => {
+        setForm((prev) => ({
+            ...prev,
+            phones: prev.phones.filter((_, i) => i !== index),
+        }));
+    };
 
     async function save(event) {
         event.preventDefault();
@@ -137,8 +159,46 @@ export default function CompanyProfileManager() {
                                         <div className="grid gap-5 sm:grid-cols-2">
                                             <Field label="Company name" name="companyName" value={form.companyName} change={change} required />
                                             <Field label="Public email" name="email" type="email" value={form.email} change={change} />
-                                            <Field label="Phone" name="phone" type="tel" value={form.phone} change={change} />
+                                            {/* <Field label="Phone" name="phone" type="tel" value={form.phone || ""} change={change} /> */}
                                             <Field label="Address" name="address" value={form.address} change={change} />
+                                        </div>
+
+                                        <div>
+                                            <label className="mb-2 block text-sm font-semibold text-slate-700">Phone Numbers</label>
+                                            <div className="space-y-3">
+                                                {(form.phones || [""]).map((phone, index) => (
+                                                    <div key={index} className="flex gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={phone}
+                                                            onChange={(e) => handlePhoneChange(index, e.target.value)
+
+                                                            }
+
+                                                            placeholder="+255/0 XXX XXX XXX"
+                                                            className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                                                        />
+
+                                                        {form.phones.length > 1 && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removePhone(index)}
+                                                                className="rounded-xl border border-red-200 px-4 text-sm font-semibold text-red-600 hover:bg-red-50"
+                                                            >
+                                                                Remove
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <button 
+                                                type="button"
+                                                onClick={addPhone}
+                                                className="mt-3 text-sm font-semibold text-orange-600 hover:text-orange-700"
+                                            >
+                                                + 
+                                            </button>
                                         </div>
                                         <Field label="About description" name="about" value={form.about} change={change} required textarea />
                                         <div className="border-t border-slate-100 pt-5">

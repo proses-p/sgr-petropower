@@ -14,13 +14,13 @@ export default function AboutPreview() {
             />
           </div>
 
-          <div className="absolute bottom-5 left-0 h-[44%] w-[43%] overflow-hidden border-[6px] border-white shadow-xl sm:bottom-8 sm:h-[48%] sm:w-[42%]">
+          {/* <div className="absolute bottom-5 left-0 h-[44%] w-[43%] overflow-hidden border-[6px] border-white shadow-xl sm:bottom-8 sm:h-[48%] sm:w-[42%]">
             <img
               src="https://www.sgrpetropower.co.tz/images/steelfab2.jpg"
               alt="Steel fabrication and structures"
               className="h-full w-full object-cover object-center"
             />
-          </div>
+          </div> */}
 
           <div className="absolute left-0 top-5 border-l-2 border-[#ed1c24] bg-white/95 px-4 py-3 shadow-sm sm:top-8 sm:px-5 sm:py-4">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#ed1c24]">
